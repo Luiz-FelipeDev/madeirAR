@@ -8,42 +8,75 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div id="ar-overlay">
+        <div id="ui-container" class="ui-layer">
+            <button id="menu-toggle" class="toggle-btn glass-panel">
+                <span class="material-symbols-outlined" id="toggle-icon">expand_more</span>
+            </button>
 
-    <div id="ui-container" class="ui-layer">
-        <div class="menu-panel glass-panel">
-            <h3>Bases</h3>
-            <div class="options-row" id="base-options">
-                <button data-type="base" data-id="trestle" data-cost="150">Cavalete</button>
-                <button data-type="base" data-id="rustic_wood" data-cost="300">Tronco</button>
-                <button data-type="base" data-id="wall_bracket" data-cost="80">Parede</button>
-            </div>
+            <div id="main-menu" class="menu-panel glass-panel">
+                
+                <h3>Bases</h3>
+                <div class="options-row" id="base-options">
+                    <button data-type="base" data-id="trestle_adjustable" data-cost="180">Cavalete Ajustável</button>
+                    <button data-type="base" data-id="trestle_normal" data-cost="140">Cavalete Normal</button>
+                    <button data-type="base" data-id="rustic_wood_1" data-cost="350">Madeira Rústica 1</button>
+                    <button data-type="base" data-id="rustic_wood_2" data-cost="380">Madeira Rústica 2</button>
+                    <button data-type="base" data-id="triple_leg" data-cost="120">Pé Triplo</button>
+                    <button data-type="base" data-id="quad_leg" data-cost="150">Pé Quádruplo</button>
+                </div>
 
-            <h3>Tampos</h3>
-            <div class="options-row" id="top-options">
-                <button data-type="top" data-id="rectangular" data-cost="200">Retangular</button>
-                <button data-type="top" data-id="round" data-cost="250">Redondo</button>
-            </div>
+                <h3>Formato do Tampo</h3>
+                <div class="options-row" id="top-category-options">
+                    <button data-type="top-category" data-target="sub-rectangular">Retangular</button>
+                    <button data-type="top-category" data-target="sub-round">Redondo</button>
+                </div>
 
-            <h3>Acabamento</h3>
-            <div class="options-row" id="texture-options">
-                <button data-type="texture" data-id="pinus" data-multiplier="1">Pinus</button>
-                <button data-type="texture" data-id="oak" data-multiplier="1.5">Carvalho</button>
-                <button data-type="texture" data-id="mdf" data-multiplier="0.8">MDF</button>
-            </div>
-            
-            <div class="checkout-container">
-                <span id="total-price">R$ 0,00</span>
-                <button id="btn-checkout" class="action-btn">
-                    <span class="material-symbols-outlined">send</span> Solicitar
-                </button>
+                <!-- Sub-menus -->
+                <div id="sub-rectangular" class="sub-options-container hidden">
+                    <h3>Variações Retangulares</h3>
+                    <div class="options-row">
+                        <button data-type="top" data-id="rectangular_standard" data-cost="200">Padrão</button>
+                        <button data-type="top" data-id="rectangular_rounded" data-cost="220">Canto Redondo</button>
+                        <button data-type="top" data-id="rectangular_organic" data-cost="350">Borda Orgânica</button>
+                    </div>
+                </div>
+
+                <div id="sub-round" class="sub-options-container hidden">
+                    <h3>Variações Redondas</h3>
+                    <div class="options-row">
+                        <button data-type="top" data-id="round_standard" data-cost="250">Padrão</button>
+                        <button data-type="top" data-id="round_bevel" data-cost="280">Chanfrado</button>
+                    </div>
+                </div>
+
+                <h3>Acabamento</h3>
+                <div class="options-row texture-scroll" id="texture-options">
+                    <button class="texture-btn" data-type="texture" data-id="pinus" data-multiplier="1" style="background-image: url('assets/textures/pinus.jpg');" aria-label="Pinus"></button>
+                    
+                    <button class="texture-btn" data-type="texture" data-id="oak" data-multiplier="1.5" style="background-image: url('assets/textures/oak.jpg');" aria-label="Carvalho"></button>
+                    
+                    <button class="texture-btn" data-type="texture" data-id="mdf" data-multiplier="0.8" style="background-image: url('assets/textures/mdf.jpg');" aria-label="MDF"></button>
+
+                    <button class="texture-btn" data-type="texture" data-id="mahogany" data-multiplier="2.0" style="background-image: url('assets/textures/mahogany.jpg');" aria-label="Mogno"></button>
+
+                    <button class="texture-btn" data-type="texture" data-id="walnut" data-multiplier="1.8" style="background-image: url('assets/textures/walnut.jpg');" aria-label="Nogueira"></button>
+                </div>
+                
+                <div class="checkout-container">
+                    <span id="total-price">R$ 0,00</span>
+                    <button id="btn-checkout" class="action-btn">
+                        <span class="material-symbols-outlined">send</span> Solicitar
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="gap-control-container" class="hidden">
-        <span class="material-symbols-outlined">straighten</span>
-        <input type="range" id="trestle-gap-slider" min="0.8" max="2.5" step="0.1" value="1.5">
-        <span id="gap-value-display">1.5m</span>
+        <div id="gap-control-container" class="hidden">
+            <span class="material-symbols-outlined">straighten</span>
+            <input type="range" id="trestle-gap-slider" min="0.8" max="2.5" step="0.1" value="1.5">
+            <span id="gap-value-display">1.5m</span>
+        </div>
     </div>
 
     <script type="importmap">

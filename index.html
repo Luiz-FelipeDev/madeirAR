@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AR Furniture Customization</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="ui-container" class="ui-layer">
+        <div class="menu-panel glass-panel">
+            <h3>Bases</h3>
+            <div class="options-row" id="base-options">
+                <button data-type="base" data-id="trestle" data-cost="150">Cavalete</button>
+                <button data-type="base" data-id="rustic_wood" data-cost="300">Tronco</button>
+                <button data-type="base" data-id="wall_bracket" data-cost="80">Parede</button>
+            </div>
+
+            <h3>Tampos</h3>
+            <div class="options-row" id="top-options">
+                <button data-type="top" data-id="rectangular" data-cost="200">Retangular</button>
+                <button data-type="top" data-id="round" data-cost="250">Redondo</button>
+            </div>
+
+            <h3>Acabamento</h3>
+            <div class="options-row" id="texture-options">
+                <button data-type="texture" data-id="pinus" data-multiplier="1">Pinus</button>
+                <button data-type="texture" data-id="oak" data-multiplier="1.5">Carvalho</button>
+                <button data-type="texture" data-id="mdf" data-multiplier="0.8">MDF</button>
+            </div>
+            
+            <div class="checkout-container">
+                <span id="total-price">R$ 0,00</span>
+                <button id="btn-checkout" class="action-btn">
+                    <span class="material-symbols-outlined">send</span> Solicitar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gap-control-container" class="hidden">
+        <span class="material-symbols-outlined">straighten</span>
+        <input type="range" id="trestle-gap-slider" min="0.8" max="2.5" step="0.1" value="1.5">
+        <span id="gap-value-display">1.5m</span>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

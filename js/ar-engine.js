@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { AppState } from './store.js';
 
 export class AREngine {
@@ -18,15 +19,15 @@ export class AREngine {
         this.activeGroup = new THREE.Group();
         this.scene.add(this.activeGroup);
 
+        this.loader = new GLTFLoader();
         this.textureLoader = new THREE.TextureLoader();
         
-        // Dictionaries to hold our loaded (or mocked) assets
         this.loadedModels = {};
         this.loadedTextures = {};
         this.isPlaced = false;
 
         this.init();
-        this.loadMockAssets(); // Changed to use Mocks
+        this.loadAssets();
 
         AppState.subscribe(() => this.updateAssembly());
     }
@@ -37,18 +38,17 @@ export class AREngine {
         this.renderer.xr.enabled = true;
         this.container.appendChild(this.renderer.domElement);
 
-        // Add lighting so we can see the mock geometries clearly
-        const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+        const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 2);
         light.position.set(0.5, 1, 0.25);
         this.scene.add(light);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
         dirLight.position.set(2, 5, 2);
         this.scene.add(dirLight);
 
         document.body.appendChild(ARButton.createButton(this.renderer, { 
             requiredFeatures: ['hit-test', 'dom-overlay'],
-            domOverlay: { root: document.body }
+            domOverlay: { root: document.getElementById('ar-overlay') }
         }));
 
         this.setupReticle();
@@ -72,55 +72,56 @@ export class AREngine {
         this.scene.add(this.reticle);
     }
 
-    // --- MOCK ASSET GENERATOR ---
-    loadMockAssets() {
-        // Base material for mocks
-        const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.7 });
+    loadAssets() {
+        const modelsToLoad = [
+            // Bases
+            { id: 'trestle_adjustable', url: 'assets/bases/trestle_adjustable.glb' },
+            // { id: 'trestle_normal', url: 'assets/bases/trestle_normal.glb' },
+            // { id: 'rustic_wood_1', url: 'assets/bases/rustic_wood_1.glb' },
+            // { id: 'rustic_wood_2', url: 'assets/bases/rustic_wood_2.glb' },
+            // { id: 'triple_leg', url: 'assets/bases/triple_leg.glb' },
+            // { id: 'quad_leg', url: 'assets/bases/quad_leg.glb' },
+            
+            // Rectangular Tops
+            { id: 'rectangular_standard', url: 'assets/tops/rectangular_standard.glb' },
+            { id: 'rectangular_rounded', url: 'assets/tops/rectangular_rounded.glb' },
+            { id: 'rectangular_organic', url: 'assets/tops/rectangular_organic.glb' },
+            
+            // Round Tops
+            // { id: 'round_standard', url: 'assets/tops/round_standard.glb' },
+            // { id: 'round_bevel', url: 'assets/tops/round_bevel.glb' }
+        ];
 
-        // 1. Trestle Mock (Cavalete: 80cm height, 60cm depth, 5cm width)
-        const trestleGeom = new THREE.BoxGeometry(0.05, 0.8, 0.6);
-        trestleGeom.translate(0, 0.4, 0); // Move pivot to bottom center
-        this.loadedModels['trestle'] = new THREE.Mesh(trestleGeom, baseMaterial);
+        modelsToLoad.forEach(item => {
+            this.loader.load(
+                item.url, 
+                (gltf) => {
+                    this.loadedModels[item.id] = gltf.scene;
+                    this.updateAssembly(); 
+                }, 
+                undefined, 
+                (err) => console.warn(`Failed to load ${item.id}`, err)
+            );
+        });
 
-        // 2. Rustic Wood Mock (Tronco: 75cm height, 40cm diameter cylinder)
-        const trunkGeom = new THREE.CylinderGeometry(0.2, 0.2, 0.75, 16);
-        trunkGeom.translate(0, 0.375, 0); // Move pivot to bottom center
-        this.loadedModels['rustic_wood'] = new THREE.Mesh(trunkGeom, baseMaterial);
+        const texturesToLoad = [
+            { id: 'pinus', url: 'assets/textures/pinus.jpg' },
+            { id: 'oak', url: 'assets/textures/oak.jpg' },
+            { id: 'mdf', url: 'assets/textures/mdf.jpg' },
+            { id: 'mahogany', url: 'assets/textures/mahogany.jpg' },
+            { id: 'walnut', url: 'assets/textures/walnut.jpg' }
+        ];
 
-        // 3. Wall Bracket Mock (Mão Francesa: 40cm height, 40cm depth, 5cm width)
-        const wallGeom = new THREE.BoxGeometry(0.05, 0.4, 0.4);
-        wallGeom.translate(0, 0.2, 0.2); // Pivot at the back edge, bottom
-        this.loadedModels['wall_bracket'] = new THREE.Mesh(wallGeom, baseMaterial);
-
-        // 4. Rectangular Top Mock (Tampo Retangular: 2m width, 5cm height, 90cm depth)
-        const rectGeom = new THREE.BoxGeometry(2.0, 0.05, 0.9);
-        rectGeom.translate(0, 0.025, 0); // Pivot at bottom center
-        this.loadedModels['rectangular'] = new THREE.Mesh(rectGeom, new THREE.MeshStandardMaterial({ color: 0xeeeeee }));
-
-        // 5. Round Top Mock (Tampo Redondo: 1.2m diameter, 5cm height)
-        const roundGeom = new THREE.CylinderGeometry(0.6, 0.6, 0.05, 32);
-        roundGeom.translate(0, 0.025, 0); // Pivot at bottom center
-        this.loadedModels['round'] = new THREE.Mesh(roundGeom, new THREE.MeshStandardMaterial({ color: 0xeeeeee }));
-
-        // 6. Mock Textures (Create basic colored textures programmatically)
-        this.loadedTextures['pinus'] = this.createColorTexture('#f8e5c0');
-        this.loadedTextures['oak'] = this.createColorTexture('#8b5a2b');
-        this.loadedTextures['mdf'] = this.createColorTexture('#ffffff');
-
-        // Trigger assembly once mocks are created
-        this.updateAssembly();
+        texturesToLoad.forEach(item => {
+            this.textureLoader.load(item.url, (tex) => {
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.RepeatWrapping;
+                tex.colorSpace = THREE.SRGBColorSpace;
+                this.loadedTextures[item.id] = tex;
+                this.updateAssembly();
+            });
+        });
     }
-
-    createColorTexture(colorHex) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 2;
-        canvas.height = 2;
-        const context = canvas.getContext('2d');
-        context.fillStyle = colorHex;
-        context.fillRect(0, 0, 2, 2);
-        return new THREE.CanvasTexture(canvas);
-    }
-    // ----------------------------
 
     updateAssembly() {
         this.activeGroup.clear();
@@ -132,44 +133,58 @@ export class AREngine {
         let baseHeight = 0; 
 
         // 1. Build Base
+
+        /*
+        * There are two types of bases:
+        * 1. Single base (Rustic wood, triple leg, quad leg)
+        * 2. Mirrored trestle (Cavalete Ajustável)
+        */
+
         if (baseId && this.loadedModels[baseId]) {
-            if (baseId === 'trestle') {
+            // Mirror trestle
+            if (baseId.includes('trestle')) {
                 const trestleLeft = this.loadedModels[baseId].clone();
                 const trestleRight = this.loadedModels[baseId].clone();
+
+                trestleLeft.rotation.y = Math.PI / 2;
+                trestleRight.rotation.y = Math.PI / 2;
                 
                 const halfGap = AppState.trestleGap / 2;
+                
+                // Position and mirror the pair
                 trestleLeft.position.set(-halfGap, 0, 0);
                 trestleRight.position.set(halfGap, 0, 0);
+                
+                // Mirror the right trestle on X axis to make it a perfect reflected pair
+                trestleRight.scale.x = -1;
                 
                 this.activeGroup.add(trestleLeft);
                 this.activeGroup.add(trestleRight);
 
-                baseHeight = 0.8; // Hardcoded mock height for trestle
-            } else if (baseId === 'rustic_wood') {
+                baseHeight = this.calculateModelHeight(trestleLeft);
+            } else {
+                // Single base logic (Rustic wood, triple leg, quad leg)
                 const baseModel = this.loadedModels[baseId].clone();
                 this.activeGroup.add(baseModel);
-                baseHeight = 0.75; // Hardcoded mock height for trunk
-            } else if (baseId === 'wall_bracket') {
-                const baseModel = this.loadedModels[baseId].clone();
-                this.activeGroup.add(baseModel);
-                baseHeight = 0.4;
+                baseHeight = this.calculateModelHeight(baseModel);
             }
-        }
+        }   
 
-        // 2. Build Top
         if (topId && this.loadedModels[topId]) {
             const topModel = this.loadedModels[topId].clone();
             
-            // Elevate the top to rest on the base
             topModel.position.set(0, baseHeight, 0);
+            topModel.scale.set(0.01, 0.01, 0.01);
 
-            // Apply mock texture if selected
             if (textureId && this.loadedTextures[textureId]) {
                 const selectedTex = this.loadedTextures[textureId];
-                topModel.material = topModel.material.clone();
-                topModel.material.map = selectedTex;
-                topModel.material.color.setHex(0xffffff); // Clear base color so texture shows
-                topModel.material.needsUpdate = true;
+                topModel.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material = child.material.clone();
+                        child.material.map = selectedTex;
+                        child.material.needsUpdate = true;
+                    }
+                });
             }
 
             this.activeGroup.add(topModel);
@@ -178,6 +193,11 @@ export class AREngine {
         if (!this.isPlaced) {
             this.activeGroup.position.set(0, 0, 0);
         }
+    }
+
+    calculateModelHeight(model) {
+        const box = new THREE.Box3().setFromObject(model);
+        return box.max.y - box.min.y;
     }
 
     placeFurniture() {

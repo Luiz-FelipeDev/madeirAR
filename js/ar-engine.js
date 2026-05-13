@@ -96,7 +96,8 @@ export class AREngine {
         const modelsToLoad = [
             // Bases
             { id: 'trestle_adjustable', url: 'assets/bases/trestle_adjustable.glb' },
-            { id: 'ester_table_leg.glb', url: 'assets/bases/ester_table_leg.glb' },
+            { id: 'dragon', url: 'assets/bases/dragon.glb' },
+            { id: 'triple', url: 'assets/bases/triple.glb' },
             
             // Rectangular Tops
             { id: 'rectangular_standard', url: 'assets/tops/rectangular_standard.glb' },
@@ -106,6 +107,7 @@ export class AREngine {
             // Round Tops
             { id: 'round_standard', url: 'assets/tops/round_standard.glb' },
             { id: 'round_bevel', url: 'assets/tops/round_bevel.glb' },
+            { id: 'glass', url: 'assets/tops/glass.glb' },
 
             // Decorations
             { id: '2_ducks_wood', url: 'assets/decorations/2_ducks_wood.glb' },

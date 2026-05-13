@@ -60,7 +60,6 @@ h3 {
     font-size: 0.85rem;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s;
 }
 
 .options-row button.active {
@@ -152,7 +151,6 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]::-webkit-slider-thumb:active { transform: scale(1.1); }
 
 .sub-options-container {
-    transition: all 0.3s ease-out;
     opacity: 1;
     max-height: 200px;
     overflow: hidden;

@@ -71,6 +71,9 @@ export class UIManager {
                     const multiplier = parseFloat(target.dataset.multiplier);
                     AppState.setTexture(id, multiplier);
                 }
+                else if (type === 'decoration') {
+                    AppState.setDecoration(id);
+                }
             });
         });
 

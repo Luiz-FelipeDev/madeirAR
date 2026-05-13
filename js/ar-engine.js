@@ -16,8 +16,18 @@ export class AREngine {
         this.hitTestSource = null;
         this.hitTestSourceRequested = false;
         
+        // Group for the main customizable furniture
         this.activeGroup = new THREE.Group();
+        this.activeGroup.visible = false;
         this.scene.add(this.activeGroup);
+
+        // Group for placed decorations
+        this.decorationsGroup = new THREE.Group();
+        this.scene.add(this.decorationsGroup);
+
+        // Raycaster for virtual object intersection
+        this.raycaster = new THREE.Raycaster();
+        this.screenCenter = new THREE.Vector2(0, 0);
 
         this.loader = new GLTFLoader();
         this.textureLoader = new THREE.TextureLoader();
@@ -25,11 +35,21 @@ export class AREngine {
         this.loadedModels = {};
         this.loadedTextures = {};
         this.isPlaced = false;
+        this.placementMode = 'furniture'; // 'furniture' or 'decoration'
 
         this.init();
         this.loadAssets();
 
-        AppState.subscribe(() => this.updateAssembly());
+        AppState.subscribe(() => this.onStateUpdate());
+    }
+
+    onStateUpdate() {
+        if (AppState.selectedDecoration) {
+            this.placementMode = 'decoration';
+        } else {
+            this.placementMode = 'furniture';
+            this.updateAssembly();
+        }
     }
 
     init() {
@@ -76,11 +96,7 @@ export class AREngine {
         const modelsToLoad = [
             // Bases
             { id: 'trestle_adjustable', url: 'assets/bases/trestle_adjustable.glb' },
-            // { id: 'trestle_normal', url: 'assets/bases/trestle_normal.glb' },
-            // { id: 'rustic_wood_1', url: 'assets/bases/rustic_wood_1.glb' },
-            // { id: 'rustic_wood_2', url: 'assets/bases/rustic_wood_2.glb' },
-            // { id: 'triple_leg', url: 'assets/bases/triple_leg.glb' },
-            // { id: 'quad_leg', url: 'assets/bases/quad_leg.glb' },
+            { id: 'ester_table_leg.glb', url: 'assets/bases/ester_table_leg.glb' },
             
             // Rectangular Tops
             { id: 'rectangular_standard', url: 'assets/tops/rectangular_standard.glb' },
@@ -88,8 +104,13 @@ export class AREngine {
             { id: 'rectangular_organic', url: 'assets/tops/rectangular_organic.glb' },
             
             // Round Tops
-            // { id: 'round_standard', url: 'assets/tops/round_standard.glb' },
-            // { id: 'round_bevel', url: 'assets/tops/round_bevel.glb' }
+            { id: 'round_standard', url: 'assets/tops/round_standard.glb' },
+            { id: 'round_bevel', url: 'assets/tops/round_bevel.glb' },
+
+            // Decorations
+            { id: '2_ducks_wood', url: 'assets/decorations/2_ducks_wood.glb' },
+            { id: 'santa_painted_wooden_statue', url: 'assets/decorations/santa_painted_wooden_statue.glb' },
+            { id: 'christmas_decoration_small_table_tree', url: 'assets/decorations/christmas_decoration_small_table_tree.glb' }
         ];
 
         modelsToLoad.forEach(item => {
@@ -97,7 +118,7 @@ export class AREngine {
                 item.url, 
                 (gltf) => {
                     this.loadedModels[item.id] = gltf.scene;
-                    this.updateAssembly(); 
+                    if (this.placementMode === 'furniture') this.updateAssembly(); 
                 }, 
                 undefined, 
                 (err) => console.warn(`Failed to load ${item.id}`, err)
@@ -124,6 +145,8 @@ export class AREngine {
     }
 
     updateAssembly() {
+        if (this.placementMode !== 'furniture') return;
+
         this.activeGroup.clear();
 
         const baseId = AppState.selectedBase;
@@ -170,11 +193,14 @@ export class AREngine {
             }
         }   
 
+        // 2. Build Top
         if (topId && this.loadedModels[topId]) {
             const topModel = this.loadedModels[topId].clone();
             
             topModel.position.set(0, baseHeight, 0);
-            topModel.scale.set(0.01, 0.01, 0.01);
+            
+            // Temporary fix for giant tops - Remove when 3D models are fixed
+            // topModel.scale.set(0.01, 0.01, 0.01);
 
             if (textureId && this.loadedTextures[textureId]) {
                 const selectedTex = this.loadedTextures[textureId];
@@ -201,12 +227,34 @@ export class AREngine {
     }
 
     placeFurniture() {
-        if (this.reticle.visible && AppState.selectedBase && !this.isPlaced) {
+        if (!this.reticle.visible) return;
+
+        if (this.placementMode === 'furniture' && AppState.selectedBase && !this.isPlaced) {
+            // Place main furniture
             this.activeGroup.position.setFromMatrixPosition(this.reticle.matrix);
             this.activeGroup.quaternion.setFromRotationMatrix(this.reticle.matrix);
-            
             this.isPlaced = true;
             this.reticle.visible = false;
+        } 
+        else if (this.placementMode === 'decoration' && AppState.selectedDecoration) {
+            // Place a decoration instance
+            this.placeDecoration();
+        }
+    }
+
+    placeDecoration() {
+        const decId = AppState.selectedDecoration;
+        if (this.loadedModels[decId]) {
+            const decModel = this.loadedModels[decId].clone();
+            
+            // Attach to the exact transform of the reticle at this moment
+            decModel.position.setFromMatrixPosition(this.reticle.matrix);
+            decModel.quaternion.setFromRotationMatrix(this.reticle.matrix);
+            
+            this.decorationsGroup.add(decModel);
+            
+            // Reset state so user has to click the button again to place another
+            AppState.setDecoration(null);
         }
     }
 
@@ -231,22 +279,72 @@ export class AREngine {
                     this.hitTestSourceRequested = false;
                     this.hitTestSource = null;
                     this.isPlaced = false; 
+                    this.activeGroup.visible = false;
+                    this.decorationsGroup.clear(); // Clear decos on exit
                 });
                 this.hitTestSourceRequested = true;
             }
 
-            if (this.hitTestSource && !this.isPlaced) {
+            let virtualHitValid = false;
+
+            // Check Virtual Raycast first (only if furniture is placed and we are placing a decoration)
+            if (this.isPlaced && this.placementMode === 'decoration') {
+                this.raycaster.setFromCamera(this.screenCenter, this.camera);
+                
+                // Intersect with placed furniture AND already placed decorations
+                const objectsToTest = [...this.activeGroup.children, ...this.decorationsGroup.children];
+                const intersects = this.raycaster.intersectObjects(objectsToTest, true);
+
+                if (intersects.length > 0) {
+                    const hit = intersects[0];
+                    
+                    // Create a matrix from the virtual hit normal and position
+                    const position = hit.point;
+                    const normal = hit.face.normal.clone();
+                    
+                    // Transform normal to world space
+                    const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
+                    normal.applyMatrix3(normalMatrix).normalize();
+
+                    // Align reticle to the normal (makes it lay flat on walls/tables)
+                    const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+                    
+                    this.reticle.position.copy(position);
+                    this.reticle.quaternion.copy(quaternion);
+                    this.reticle.updateMatrix();
+                    
+                    this.reticle.visible = true;
+                    virtualHitValid = true;
+                }
+            }
+
+            // Check Physical WebXR Hit Test (if virtual raycast missed)
+            if (this.hitTestSource && !virtualHitValid) {
                 const hitTestResults = frame.getHitTestResults(this.hitTestSource);
+                
                 if (hitTestResults.length > 0) {
                     const hit = hitTestResults[0];
-                    this.reticle.visible = true;
-                    this.reticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+                    const pose = hit.getPose(referenceSpace);
                     
-                    this.activeGroup.position.setFromMatrixPosition(this.reticle.matrix);
-                    this.activeGroup.quaternion.setFromRotationMatrix(this.reticle.matrix);
+                    this.reticle.matrix.fromArray(pose.transform.matrix);
+                    this.reticle.position.setFromMatrixPosition(this.reticle.matrix);
+                    this.reticle.quaternion.setFromRotationMatrix(this.reticle.matrix);
+                    
+                    // Show reticle logic
+                    if (this.placementMode === 'furniture' && AppState.selectedBase && !this.isPlaced) {
+                        this.reticle.visible = true;
+                        this.activeGroup.visible = true;
+                        this.activeGroup.position.copy(this.reticle.position);
+                        this.activeGroup.quaternion.copy(this.reticle.quaternion);
+                    } 
+                    else if (this.placementMode === 'decoration') {
+                        this.reticle.visible = true;
+                    } 
+                    else {
+                        this.reticle.visible = false;
+                    }
                 } else {
                     this.reticle.visible = false;
-                    this.activeGroup.position.set(0, -1000, 0); 
                 }
             }
         }

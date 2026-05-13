@@ -2,6 +2,7 @@ export const AppState = {
     selectedBase: null,
     selectedTop: null,
     selectedTexture: null,
+    selectedDecoration: null,
     trestleGap: 1.5,
     costs: {
         base: 0,
@@ -59,5 +60,10 @@ export const AppState = {
     
     notifyUpdate() {
         this.listeners.forEach(listener => listener(this));
-    }
+    },
+
+    setDecoration(id) {
+        this.selectedDecoration = id;
+        this.notifyUpdate();
+    },
 };

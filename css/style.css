@@ -198,11 +198,14 @@ input[type=range]::-webkit-slider-thumb:active { transform: scale(1.1); }
     height: 65px;
     border-radius: 12px;
     border: 2px solid rgba(255, 255, 255, 0.2);
-    background-size: cover;
-    background-position: center;
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.2s, box-shadow 0.2s;
     padding: 0;
+    
+    /* ADD OR UPDATE THESE 3 LINES */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .texture-btn.active {
@@ -243,3 +246,29 @@ input[type=range]::-webkit-slider-thumb:active { transform: scale(1.1); }
     pointer-events: none;
 }
 
+
+
+/* PC WebXR Emulator Override */
+@media (pointer: fine) {
+    #ar-overlay {
+        display: block !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 999999 !important;
+        pointer-events: none; 
+    }
+
+    .ui-layer {
+        pointer-events: auto; 
+    }
+}
+
+.decoration-btn {
+    background-size: cover !important;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgb(221,221,221);
+}

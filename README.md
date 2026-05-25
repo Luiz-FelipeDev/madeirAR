@@ -46,16 +46,16 @@ Embora as tecnologias exatas não sejam explicitamente visíveis nas imagens, é
 
 As imagens a seguir ilustram as funcionalidades do mandeirAR:
 
-<img width="1294" height="609" alt="primeira-photo-madeirAR" src="https://github.com/user-attachments/assets/8a8274eb-11e8-49df-85f2-c716c0896d60" />
+<img alt="primeira-photo-madeirAR" src="https://github.com/user-attachments/assets/8a8274eb-11e8-49df-85f2-c716c0896d60" width=80% />
 *Interface de configuração de bases, tampos, acabamentos e decorações.*
 
-<img width="738" height="1600" alt="image-2" src="https://github.com/user-attachments/assets/cb6614e2-a438-4e8f-b2d6-d14293615b2e" />
+<img alt="image-2" src="https://github.com/user-attachments/assets/cb6614e2-a438-4e8f-b2d6-d14293615b2e" width=80% />
 *Móvel personalizado com decorações visualizado em ambiente real via AR.*
 
-<img width="738" height="1600" alt="image-3" src="https://github.com/user-attachments/assets/c5fbc931-4318-497a-9e7a-08c8bcb233ce" />
+<img alt="image-3" src="https://github.com/user-attachments/assets/c5fbc931-4318-497a-9e7a-08c8bcb233ce" width=80% />
 *Visualização de um cavalete ajustável em AR, com indicação de escala (1.0m).*
 
-<img width="738" height="1600" alt="image-4" src="https://github.com/user-attachments/assets/2c575806-4976-41c4-a56b-cac73f104bfb" />
+<img alt="image-4" src="https://github.com/user-attachments/assets/2c575806-4976-41c4-a56b-cac73f104bfb" width=80% />
 *Detalhe do cavalete ajustável, mostrando as opções de regulagem.*
 
 

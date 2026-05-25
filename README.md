@@ -46,16 +46,25 @@ Embora as tecnologias exatas não sejam explicitamente visíveis nas imagens, é
 
 As imagens a seguir ilustram as funcionalidades do mandeirAR:
 
-<img alt="primeira-photo-madeirAR" src="https://github.com/user-attachments/assets/8a8274eb-11e8-49df-85f2-c716c0896d60" width=80% />
-*Interface de configuração de bases, tampos, acabamentos e decorações.*
+<!-- Largura padrão: 600px — boa leitura no GitHub (desktop e mobile) -->
 
-<img width="1200" height="555" alt="image-2" src="https://github.com/user-attachments/assets/f980d4a4-0d43-4b6a-aab8-883a1f057c11" />
-*Móvel personalizado com decorações visualizado em ambiente real via AR.*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8a8274eb-11e8-49df-85f2-c716c0896d60" alt="Interface de configuração de móveis" width="600" />
+</p>
+<p align="center"><em>Interface de configuração de bases, tampos, acabamentos e decorações.</em></p>
 
-<img alt="image-3" src="https://github.com/user-attachments/assets/c5fbc931-4318-497a-9e7a-08c8bcb233ce" width=80% />
-*Visualização de um cavalete ajustável em AR, com indicação de escala (1.0m).*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f980d4a4-0d43-4b6a-aab8-883a1f057c11" alt="Móvel personalizado em AR no ambiente real" width="600" />
+</p>
+<p align="center"><em>Móvel personalizado com decorações visualizado em ambiente real via AR.</em></p>
 
-<img alt="image-4" src="https://github.com/user-attachments/assets/2c575806-4976-41c4-a56b-cac73f104bfb" width=80% />
-*Detalhe do cavalete ajustável, mostrando as opções de regulagem.*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c5fbc931-4318-497a-9e7a-08c8bcb233ce" alt="Cavalete ajustável em AR com escala" width="600" />
+</p>
+<p align="center"><em>Visualização de um cavalete ajustável em AR, com indicação de escala (1.0m).</em></p>
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2c575806-4976-41c4-a56b-cac73f104bfb" alt="Detalhe do cavalete ajustável" width="600" />
+</p>
+<p align="center"><em>Detalhe do cavalete ajustável, mostrando as opções de regulagem.</em></p>
 

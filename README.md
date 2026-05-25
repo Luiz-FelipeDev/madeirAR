@@ -49,7 +49,7 @@ As imagens a seguir ilustram as funcionalidades do mandeirAR:
 <img alt="primeira-photo-madeirAR" src="https://github.com/user-attachments/assets/8a8274eb-11e8-49df-85f2-c716c0896d60" width=80% />
 *Interface de configuração de bases, tampos, acabamentos e decorações.*
 
-<img alt="image-2" src="https://github.com/user-attachments/assets/cb6614e2-a438-4e8f-b2d6-d14293615b2e" width=80% />
+<img width="1200" height="555" alt="image-2" src="https://github.com/user-attachments/assets/f980d4a4-0d43-4b6a-aab8-883a1f057c11" />
 *Móvel personalizado com decorações visualizado em ambiente real via AR.*
 
 <img alt="image-3" src="https://github.com/user-attachments/assets/c5fbc931-4318-497a-9e7a-08c8bcb233ce" width=80% />
